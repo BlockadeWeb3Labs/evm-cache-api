@@ -28,7 +28,7 @@ class AddressQueries {
 			text: `
 				SELECT
 					eto.contract_address AS contract,
-					cm.name,
+					COALESCE(cm.name, cm.custom_name, NULL) AS name,
 					cm.symbol,
 					SUM(COALESCE(eto.input, 0) - COALESCE(eto.output, 0)) AS amount
 				FROM
@@ -40,6 +40,7 @@ class AddressQueries {
 				GROUP BY
 					contract,
 					cm.name,
+					cm.custom_name,
 					cm.symbol,
 					eto.address;
 			`,
@@ -56,7 +57,7 @@ class AddressQueries {
 			text: `
 				SELECT
 					eto.contract_address AS contract,
-					cm.name,
+					COALESCE(cm.name, cm.custom_name, NULL) AS name,
 					cm.symbol,
 					eto.id,
 					SUM(COALESCE(eto.input, 0) - COALESCE(eto.output, 0)) AS amount
@@ -69,6 +70,7 @@ class AddressQueries {
 				GROUP BY
 					contract,
 					cm.name,
+					cm.custom_name,
 					cm.symbol,
 					eto.id;
 			`,

@@ -25,6 +25,10 @@ function getTokens(req,res) {
 				let row = result.rows[idx];
 				let contract = byteaBufferToHex(row.contract);
 
+				if (parseInt(row.amount, 10) <= 0) {
+					continue;
+				}
+
 				if (!tokens.hasOwnProperty(contract)) {
 					tokens[contract] = {
 						contract,

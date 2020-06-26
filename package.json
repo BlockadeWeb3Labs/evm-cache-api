@@ -1,0 +1,26 @@
+{
+  "name": "evm-cache-api",
+  "version": "1.0.0",
+  "description": "API for EVM-based chain cache",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "start-dev": "nodemon index.js",
+    "test": "npx mocha --file test/setup.js --timeout 5000 --exit"
+  },
+  "author": "Blockade Games, Inc",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "connect-pg-simple": "6.1.0",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "loglevel": "^1.6.8",
+    "pg": "^8.0.3"
+  },
+  "devDependencies": {
+    "axios": "^0.19.2",
+    "mocha": "^7.1.2",
+    "nodemon": "^2.0.3"
+  }
+}

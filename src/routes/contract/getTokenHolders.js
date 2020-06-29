@@ -5,6 +5,12 @@ const ContractQueries   = require('../../database/queries/ContractQueries.js');
 const byteaBufferToHex = require('../../util/byteaBufferToHex.js');
 
 function getTokenHolders(req,res) {
+	return response.send(
+		res,
+		response.NOT_IMPLEMENTED,
+		{ "notice" : "Not yet available." }
+	);
+
 	let params = getParams(req);
 
 	// Get the defaults

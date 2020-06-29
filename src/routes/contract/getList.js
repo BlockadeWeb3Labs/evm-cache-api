@@ -13,10 +13,15 @@ function getList(req,res) {
 				result.rows[idx].address = byteaBufferToHex(result.rows[idx].address);
 			}
 
+			let count = 0;
+			if (result.rows && result.rows.length) {
+				count = result.rows.length;
+			}
+
 			return response.send(
 				res,
 				response.OK,
-				{ contracts: result.rows }
+				{ count, contracts: result.rows }
 			);
 		});
 	});

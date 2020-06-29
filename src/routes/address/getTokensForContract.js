@@ -4,13 +4,14 @@ const Database         = require('../../database/Database.js');
 const AddressQueries   = require('../../database/queries/AddressQueries.js');
 const byteaBufferToHex = require('../../util/byteaBufferToHex.js');
 
-function getContractTokenCounts(req,res) {
+function getTokensForContract(req,res) {
 	let params = getParams(req);
 
 	// Get the defaults
-	let address = params.address;
-	let limit   = Math.min(parseInt(params.limit, 10) || 50, 200);
-	let offset  = parseInt(params.offset, 10) || 0;
+	let address  = params.address;
+	let contract = params.contract;
+	let limit    = Math.min(parseInt(params.limit, 10) || 50, 200);
+	let offset   = parseInt(params.offset, 10) || 0;
 
 	// Sanity checks
 	limit  = limit > 0   ? limit  : 50;
@@ -18,33 +19,37 @@ function getContractTokenCounts(req,res) {
 
 	// Make sure that the email doesn't exist already
 	Database.connect((Client) => {
-		Client.query(AddressQueries.getContractTokenCounts(address), (result) => {
-			let contracts = [];
+		Client.query(AddressQueries.getTokensForContract(address, contract), (result) => {
+			let tokens = [];
+			let contract, name, symbol;
 
 			for (let idx = 0; idx < result.rowCount; idx++) {
 				let row = result.rows[idx];
+
+				contract = byteaBufferToHex(row.contract);
+				name = row.name;
+				symbol = row.symbol;
 
 				if (parseInt(row.amount, 10) <= 0) {
 					continue;
 				}
 
-				contracts.push({
-					...row,
-					'contract' : byteaBufferToHex(row.contract),
-					'address' : byteaBufferToHex(row.address),
+				tokens.push({
+					'id' : row.id,
+					'amount' : row.amount
 				});
 			}
 
 			return response.send(
 				res,
 				response.OK,
-				{ contracts }
+				{ contract, name, symbol, tokens }
 			);
 		});
 	});
 }
 
 module.exports = {
-	get  : getContractTokenCounts,
-	post : getContractTokenCounts
+	get  : getTokensForContract,
+	post : getTokensForContract
 };

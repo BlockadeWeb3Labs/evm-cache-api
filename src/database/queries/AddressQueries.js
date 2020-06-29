@@ -79,6 +79,39 @@ class AddressQueries {
 			]
 		}
 	}
+
+	static getTokensForContract(
+		address,
+		contract
+	) {
+		return {
+			text: `
+				SELECT
+					eto.contract_address AS contract,
+					COALESCE(cm.name, cm.custom_name, NULL) AS name,
+					cm.symbol,
+					eto.id,
+					SUM(COALESCE(eto.input, 0) - COALESCE(eto.output, 0)) AS amount
+				FROM
+					event_transfer_owner eto,
+					contract_meta cm
+				WHERE
+					eto.address = $1 AND
+					cm.address = eto.contract_address AND
+					cm.address = $2
+				GROUP BY
+					contract,
+					cm.name,
+					cm.custom_name,
+					cm.symbol,
+					eto.id;
+			`,
+			values: [
+				hexToBytea(address),
+				hexToBytea(contract)
+			]
+		}
+	}
 }      
 
 module.exports = AddressQueries;

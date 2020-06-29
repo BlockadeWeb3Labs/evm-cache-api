@@ -1,6 +1,23 @@
 const hexToBytea = require('../../util/hexToBytea.js');
 
 class ContractQueries {
+	static getList() {
+		return {
+			text: `
+				SELECT
+					address,
+					COALESCE(name, custom_name, NULL) AS name,
+					symbol,
+					standard,
+					abi IS NOT NULL AS using_abi
+				FROM
+					contract_meta
+				ORDER BY
+					name ASC;
+			`
+		}
+	}
+
 	static getTokenHolders(
 		contract
 	) {

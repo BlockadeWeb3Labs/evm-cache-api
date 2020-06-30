@@ -30,7 +30,7 @@ class AddressQueries {
 					eto.contract_address AS contract,
 					COALESCE(cm.name, cm.custom_name, NULL) AS name,
 					cm.symbol,
-					SUM(COALESCE(eto.input, 0) - COALESCE(eto.output, 0)) AS amount
+					SUM(GREATEST(COALESCE(eto.input, 0) - COALESCE(eto.output, 0), 0)) AS amount
 				FROM
 					event_transfer_owner eto,
 					contract_meta cm

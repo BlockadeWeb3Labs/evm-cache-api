@@ -19,6 +19,8 @@ function getTokens(req,res) {
 	// Make sure that the email doesn't exist already
 	Database.connect((Client) => {
 		Client.query(AddressQueries.getTokens(address), (result) => {
+			Client.release();
+
 			let tokens = {};
 
 			for (let idx = 0; idx < result.rowCount; idx++) {

@@ -15,6 +15,8 @@ function hasTokens(req,res) {
 	// Make sure that the email doesn't exist already
 	Database.connect((Client) => {
 		Client.query(ContractQueries.hasTokenId(contract, id, address), (result) => {
+			Client.release();
+
 			let hasToken = false;
 
 			if (result.rowCount) {

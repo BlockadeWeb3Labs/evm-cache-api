@@ -19,6 +19,8 @@ function getContractTokenCounts(req,res) {
 	// Make sure that the email doesn't exist already
 	Database.connect((Client) => {
 		Client.query(AddressQueries.getContractTokenCounts(address), (result) => {
+			Client.release();
+
 			let contracts = [];
 
 			for (let idx = 0; idx < result.rowCount; idx++) {

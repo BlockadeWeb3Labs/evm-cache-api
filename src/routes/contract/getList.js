@@ -8,6 +8,7 @@ function getList(req,res) {
 	// Make sure that the email doesn't exist already
 	Database.connect((Client) => {
 		Client.query(ContractQueries.getList(), (result) => {
+			Client.release();
 
 			for (let idx = 0; idx < result.rowCount; idx++) {
 				result.rows[idx].address = byteaBufferToHex(result.rows[idx].address);

@@ -25,6 +25,8 @@ function getTokenHolders(req,res) {
 	// Make sure that the email doesn't exist already
 	Database.connect((Client) => {
 		Client.query(ContractQueries.getTokenHolders(contract), (result) => {
+			Client.release();
+
 			let addresses = [];
 
 			for (let idx = 0; idx < result.rowCount; idx++) {

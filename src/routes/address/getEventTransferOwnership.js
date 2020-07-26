@@ -19,6 +19,8 @@ function getEventTransferOwnership(req,res) {
 	// Make sure that the email doesn't exist already
 	Database.connect((Client) => {
 		Client.query(AddressQueries.getEventTransferOwnership(address), (result) => {
+			Client.release();
+
 			let eventTransfers = [];
 
 			for (let idx = 0; idx < result.rowCount; idx++) {

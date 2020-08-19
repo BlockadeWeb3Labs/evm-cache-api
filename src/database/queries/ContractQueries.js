@@ -124,6 +124,57 @@ class ContractQueries {
 			]
 		}
 	}
+
+	static getEvents(
+		contract,
+		order       = 'ASC',
+		limit       = 50,
+		offset      = 0,
+		start_block = null,
+		end_block   = null
+	) {
+		// Force order to be either ASC or DESC
+		// Hate injecting text directly into a query
+		order = (order === 'DESC') ? 'DESC' : 'ASC';
+
+		return {
+			text: `
+				SELECT
+					l.block_number,
+					l.transaction_hash,
+					l.log_index,
+					l.topic_0,
+					l.topic_1,
+					l.topic_2,
+					l.topic_3,
+					e.name,
+					e.result
+				FROM
+					log l
+				LEFT JOIN
+					event e ON
+						e.log_id = l.log_id
+				WHERE
+					l.address = $1 AND
+					CASE WHEN $4::INTEGER IS NOT NULL THEN l.block_number >= $4::INTEGER ELSE TRUE END AND
+					CASE WHEN $5::INTEGER IS NOT NULL THEN l.block_number <= $5::INTEGER ELSE TRUE END
+				ORDER BY
+					l.block_number ${order},
+					l.log_index ${order}
+				LIMIT
+					$2
+				OFFSET
+					$3;
+			`,
+			values: [
+				hexToBytea(contract),
+				limit,
+				offset,
+				start_block,
+				end_block
+			]
+		}
+	}
 }
 
 module.exports = ContractQueries;

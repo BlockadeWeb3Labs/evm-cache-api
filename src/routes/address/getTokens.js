@@ -42,7 +42,9 @@ function getTokens(req,res) {
 
 				tokens[contract].tokens.push({
 					'id' : row.id,
-					'amount' : row.amount
+					'amount' : row.amount,
+					'token_uri' : row.token_uri,
+					'metadata' : row.metadata
 				});
 			}
 

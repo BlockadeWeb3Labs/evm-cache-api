@@ -19,7 +19,7 @@ function getTokensForContract(req,res) {
 
 	// Make sure that the email doesn't exist already
 	Database.connect((Client) => {
-		Client.query(AddressQueries.getTokensForContract(address, contract), (result) => {
+		Client.query(AddressQueries.getTokensForContract(address, contract, limit, offset), (result) => {
 			Client.release();
 
 			let tokens = [];

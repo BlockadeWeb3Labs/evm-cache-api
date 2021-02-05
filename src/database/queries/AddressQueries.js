@@ -88,7 +88,9 @@ class AddressQueries {
 
 	static getTokensForContract(
 		address,
-		contract
+		contract,
+		limit = 50,
+		offset = 0
 	) {
 		return {
 			text: `
@@ -105,7 +107,9 @@ class AddressQueries {
 				JOIN
 					contract_meta cm ON cm.address = eto.contract_address
 				LEFT JOIN
-					asset_metadata am ON am.contract_address = eto.contract_address
+					asset_metadata am ON
+						am.contract_address = eto.contract_address AND
+						am.id = eto.id
 				WHERE
 					eto.address = $1 AND
 					cm.address = $2
@@ -116,11 +120,19 @@ class AddressQueries {
 					cm.symbol,
 					eto.id,
 					am.token_uri,
-					am.metadata;
+					am.metadata
+				ORDER BY
+					eto.id ASC
+				LIMIT
+					$3
+				OFFSET
+					$4;
 			`,
 			values: [
 				hexToBytea(address),
-				hexToBytea(contract)
+				hexToBytea(contract),
+				parseInt(limit, 10) || 50,
+				parseInt(offset, 10) || 0
 			]
 		}
 	}

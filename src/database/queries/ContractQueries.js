@@ -219,7 +219,7 @@ class ContractQueries {
 			values: [
 				hexToBytea(contract),
 				id,
-				hexToBytea('0x0000000000000000000000000000000000000000');
+				hexToBytea('0x0000000000000000000000000000000000000000')
 			]
 		}
 	}

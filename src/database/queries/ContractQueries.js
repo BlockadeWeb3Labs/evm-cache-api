@@ -195,7 +195,7 @@ class ContractQueries {
 						eto.contract_address,
 						eto.id,
 						SUM(COALESCE(eto.input, 0)) AS input,
-						SUM(CASE WHEN eto.address = '\x0000000000000000000000000000000000000000' THEN 0 ELSE COALESCE(eto.output, 0) END) AS output
+						SUM(CASE WHEN eto.address = $3 THEN 0 ELSE COALESCE(eto.output, 0) END) AS output
 					FROM
 						event_transfer_owner eto
 					WHERE
@@ -218,7 +218,8 @@ class ContractQueries {
 			`,
 			values: [
 				hexToBytea(contract),
-				id
+				id,
+				hexToBytea('0x0000000000000000000000000000000000000000');
 			]
 		}
 	}

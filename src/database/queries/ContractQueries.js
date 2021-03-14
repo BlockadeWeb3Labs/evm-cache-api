@@ -175,6 +175,53 @@ class ContractQueries {
 			]
 		}
 	}
+
+	static getToken(
+		contract,
+		id
+	) {
+		return {
+			text: `
+				SELECT
+					transfers.contract_address AS contract,
+					COALESCE(cm.name, cm.custom_name, NULL) AS name,
+					cm.symbol,
+					transfers.id,
+					transfers.input - transfers.output AS amount,
+					am.token_uri,
+					am.metadata
+				FROM (
+					SELECT
+						eto.contract_address,
+						eto.id,
+						SUM(COALESCE(eto.input, 0)) AS input,
+						SUM(CASE WHEN eto.address = '\x0000000000000000000000000000000000000000' THEN 0 ELSE COALESCE(eto.output, 0) END) AS output
+					FROM
+						event_transfer_owner eto
+					WHERE
+						eto.contract_address = $1 AND
+						eto.id = $2
+					GROUP BY
+						eto.contract_address,
+						eto.id
+				) AS transfers
+				JOIN
+					contract_meta cm ON
+						cm.address = transfers.contract_address
+				LEFT JOIN
+					asset_metadata am ON
+						am.contract_address = transfers.contract_address AND
+						am.id = transfers.id
+				WHERE
+					transfers.contract_address = $1 AND
+					transfers.id = $2;
+			`,
+			values: [
+				hexToBytea(contract),
+				id
+			]
+		}
+	}
 }
 
 module.exports = ContractQueries;

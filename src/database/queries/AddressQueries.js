@@ -68,7 +68,9 @@ class AddressQueries {
 				JOIN
 					contract_meta cm ON cm.address = eto.contract_address
 				LEFT JOIN
-					asset_metadata am ON am.contract_address = eto.contract_address
+					asset_metadata am ON
+						am.contract_address = eto.contract_address AND
+						am.id = eto.id
 				WHERE
 					eto.address = $1
 				GROUP BY

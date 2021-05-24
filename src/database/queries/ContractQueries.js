@@ -54,7 +54,9 @@ class ContractQueries {
 	}
 
 	static getTokenHolders(
-		contract
+		contract,
+		limit  = 50,
+		offset = 0
 	) {
 		return {
 			text: `
@@ -66,10 +68,16 @@ class ContractQueries {
 				WHERE
 					contract_address = $1
 				GROUP BY
-					address;
+					address
+				LIMIT
+					$2
+				OFFSET
+					$3;
 			`,
 			values: [
-				hexToBytea(contract)
+				hexToBytea(contract),
+				limit,
+				offset
 			]
 		}
 	}

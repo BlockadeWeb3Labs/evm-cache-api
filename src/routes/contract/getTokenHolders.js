@@ -5,12 +5,6 @@ const ContractQueries   = require('../../database/queries/ContractQueries.js');
 const byteaBufferToHex = require('../../util/byteaBufferToHex.js');
 
 function getTokenHolders(req,res) {
-	return response.send(
-		res,
-		response.NOT_IMPLEMENTED,
-		{ "notice" : "Not yet available." }
-	);
-
 	let params = getParams(req);
 
 	// Get the defaults
@@ -24,7 +18,7 @@ function getTokenHolders(req,res) {
 
 	// Make sure that the email doesn't exist already
 	Database.connect((Client) => {
-		Client.query(ContractQueries.getTokenHolders(contract), (result) => {
+		Client.query(ContractQueries.getTokenHolders(contract, limit, offset), (result) => {
 			Client.release();
 
 			let addresses = [];

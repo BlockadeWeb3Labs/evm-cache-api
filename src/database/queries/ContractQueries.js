@@ -61,14 +61,24 @@ class ContractQueries {
 		return {
 			text: `
 				SELECT
-					address,
-					SUM(COALESCE(input, 0) - COALESCE(output, 0)) AS amount
-				FROM
-					event_transfer_owner
-				WHERE
-					contract_address = $1
+					eto.address,
+					SUM(COALESCE(eto.input, 0) - COALESCE(eto.output, 0)) AS amount
+				FROM (
+					SELECT DISTINCT ON (a.address)
+						a.address,
+						SUM(CASE WHEN a.address = et.to   THEN CASE WHEN et.value IS NOT NULL THEN et.value ELSE 1 END END) AS input,
+						SUM(CASE WHEN a.address = et.from THEN CASE WHEN et.value IS NOT NULL THEN et.value ELSE 1 END END) AS output
+					FROM
+						event_transfer et,
+						address a
+					WHERE
+						et.contract_address = $1 AND
+						(a.address = et.to OR a.address = et.from)
+					GROUP BY
+						a.address
+				) AS eto
 				GROUP BY
-					address
+					eto.address
 				LIMIT
 					$2
 				OFFSET

@@ -26,7 +26,7 @@ function getTokensForContract(req,res) {
 				symbol = row.symbol;
 
 				return {
-					'id': row.id,
+					'assetId': row.id,
 					'amount': row.amount,
 					'token_uri': row.token_uri,
 					'metadata': row.metadata

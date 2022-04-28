@@ -4,15 +4,15 @@ const Database         = require('../../database/Database.js');
 const AddressQueries   = require('../../database/queries/AddressQueries.js');
 const byteaBufferToHex = require('../../util/byteaBufferToHex.js');
 
-function getTokensForContract(req,res) {
+function getToken(req,res) {
 	let params = getParams(req);
 
 	// Get the defaults
-	const {shellId}  = params;
+	const {tokenId}  = params;
 	
 	// Make sure that the email doesn't exist already
 	Database.connect((Client) => {
-		Client.query(AddressQueries.getToken(shellId), (result) => {
+		Client.query(AddressQueries.getToken(tokenId), (result) => {
 			Client.release();
 
 			let contract, name, symbol;
@@ -40,5 +40,5 @@ function getTokensForContract(req,res) {
 }
 
 module.exports = {
-	get  : getTokensForContract
+	get  : getToken
 };

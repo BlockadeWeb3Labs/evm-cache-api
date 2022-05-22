@@ -91,8 +91,8 @@ class AddressQueries {
 	static getTokensForContract(
 		address,
 		contract,
-		limit = 50,
-		offset = 0
+		limit,
+		offset
 	) {
 		return {
 			text: `
@@ -114,7 +114,8 @@ class AddressQueries {
 						am.id = eto.id
 				WHERE
 					eto.address = $1 AND
-					cm.address = $2
+					cm.address = $2 AND
+					COALESCE(eto.input, 0) > COALESCE(eto.output, 0)
 				GROUP BY
 					contract,
 					cm.name,
@@ -128,13 +129,35 @@ class AddressQueries {
 				LIMIT
 					$3
 				OFFSET
-					$4;
+					$4
 			`,
 			values: [
 				hexToBytea(address),
 				hexToBytea(contract),
-				parseInt(limit, 10) || 50,
-				parseInt(offset, 10) || 0
+				limit,
+				offset
+			]
+		}
+	}
+
+	static getTokensForContractAmount(
+		address,
+		contract,
+	) {
+		return {
+			text: `
+				SELECT
+					COUNT(*)
+				FROM
+					event_transfer_owner eto
+				WHERE
+					eto.address = $1 AND
+					eto.contract_address = $2 AND
+					COALESCE(eto.input, 0) > COALESCE(eto.output, 0);
+			`,
+			values: [
+				hexToBytea(address),
+				hexToBytea(contract),
 			]
 		}
 	}

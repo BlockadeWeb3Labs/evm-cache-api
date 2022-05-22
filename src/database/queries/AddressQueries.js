@@ -88,44 +88,6 @@ class AddressQueries {
 		}
 	}
 
-	static getToken(
-		tokenId
-	) {
-		return {
-			text: `
-				SELECT
-					eto.contract_address AS contract,
-					COALESCE(cm.name, cm.custom_name, NULL) AS name,
-					cm.symbol,
-					eto.id,
-					SUM(COALESCE(eto.input, 0) - COALESCE(eto.output, 0)) AS amount,
-					am.token_uri,
-					am.metadata
-				FROM
-					event_transfer_owner eto
-				JOIN
-					contract_meta cm ON cm.address = eto.contract_address
-				LEFT JOIN
-					asset_metadata am ON
-						am.contract_address = eto.contract_address AND
-						am.id = eto.id
-				WHERE
-					eto.id = $1
-				GROUP BY
-					contract,
-					cm.name,
-					cm.custom_name,
-					cm.symbol,
-					eto.id,
-					am.token_uri,
-					am.metadata;
-			`,
-			values: [
-				tokenId
-			]
-		}
-	}
-
 	static getTokensForContract(
 		address,
 		contract,
@@ -152,7 +114,8 @@ class AddressQueries {
 						am.id = eto.id
 				WHERE
 					eto.address = $1 AND
-					cm.address = $2
+					cm.address = $2 AND
+					COALESCE(eto.input, 0) > COALESCE(eto.output, 0)
 				GROUP BY
 					contract,
 					cm.name,
@@ -185,37 +148,12 @@ class AddressQueries {
 			text: `
 				SELECT
 					COUNT(*)
-				FROM (
-					SELECT
-						eto.contract_address AS contract,
-						COALESCE(cm.name, cm.custom_name, NULL) AS name,
-						cm.symbol,
-						eto.id,
-						SUM(COALESCE(eto.input, 0) - COALESCE(eto.output, 0)) AS amount,
-						am.token_uri,
-						am.metadata
-					FROM
-						event_transfer_owner eto
-					JOIN
-						contract_meta cm ON cm.address = eto.contract_address
-					LEFT JOIN
-						asset_metadata am ON
-							am.contract_address = eto.contract_address AND
-							am.id = eto.id
-					WHERE
-						eto.address = $1 AND
-						cm.address = $2
-					GROUP BY
-						contract,
-						cm.name,
-						cm.custom_name,
-						cm.symbol,
-						eto.id,
-						am.token_uri,
-						am.metadata
-					ORDER BY
-						eto.id ASC
-				) AS tokens;	
+				FROM
+					event_transfer_owner eto
+				WHERE
+					eto.address = $1 AND
+					eto.contract_address = $2 AND
+					COALESCE(eto.input, 0) > COALESCE(eto.output, 0);
 			`,
 			values: [
 				hexToBytea(address),

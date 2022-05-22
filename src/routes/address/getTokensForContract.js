@@ -31,7 +31,7 @@ function getTokensForContract(req,res) {
 					'token_uri': row.token_uri,
 					'metadata': row.metadata
 				}
-			})
+			});
 
 			return response.send(
 				res,

@@ -42,6 +42,7 @@ function getByHash(req,res) {
 			delete tx.v;
 			delete tx.r;
 			delete tx.s;
+			delete tx.transaction_id;
 
 			return response.send(
 				res,

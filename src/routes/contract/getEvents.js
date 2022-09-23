@@ -32,11 +32,16 @@ function getEvents(req,res) {
 			for (let row of result.rows) {
 				row.transaction_hash = byteaBufferToHex(row.transaction_hash);
 				if (show_topics) {
-					row.topic_0 = byteaBufferToHex(row.topic_0);
-					row.topic_1 = byteaBufferToHex(row.topic_1);
-					row.topic_2 = byteaBufferToHex(row.topic_2);
-					row.topic_3 = byteaBufferToHex(row.topic_3);
+					if (row.topics) {
+						row.topics = row.topics.map(topic => byteaBufferToHex(topic));
+					} else if (row.topic_0) {
+						row.topic_0 = byteaBufferToHex(row.topic_0);
+						row.topic_1 = byteaBufferToHex(row.topic_1);
+						row.topic_2 = byteaBufferToHex(row.topic_2);
+						row.topic_3 = byteaBufferToHex(row.topic_3);
+					}
 				} else {
+					delete row.topics;
 					delete row.topic_0;
 					delete row.topic_1;
 					delete row.topic_2;
